@@ -6,8 +6,8 @@
  * @author Trisha Milan <tshmilan@gmail.com>
  */
 
-class Database {
-
+class Database
+{
     private $hostname;
     private $username;
     private $password;
@@ -17,7 +17,6 @@ class Database {
     private $mysql;
     
     private static $instance = null;
-
     /**
      * Maps the properties to the configuration array and establishes
      * a database connection
@@ -35,7 +34,6 @@ class Database {
  
         $this->connect();
     }
-
     /**
      * Connect to database using MySQLi.
      * 
@@ -58,7 +56,6 @@ class Database {
             error_log($error);
         }
     }
-    
     /**
      * Returns an existing instance of database connection or creates a new one
      * if it does not exist yet.
@@ -75,7 +72,6 @@ class Database {
 
         return self::$instance;
      }
-  
     /**
      * Get the current database connection
      * 
@@ -85,5 +81,28 @@ class Database {
     {
         return $this->mysql;
     }
-
+    /**
+     * 
+     * @return string MySQL username
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+    /**
+     * 
+     * @return string MySQL password
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+    /**
+     * 
+     * @return string MySQL host name
+     */
+    public function getHostname()
+    {
+       return $this->hostname; 
+    }
 }

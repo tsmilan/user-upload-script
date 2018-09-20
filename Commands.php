@@ -48,6 +48,7 @@ class Commands
      */
     public function readCommandLineArgs($argv)
     {
+        $mysql=Database::getInstance($config);
         switch ($argv[1]) {
             case "--file":
                 //echo "Parse CSV file and insert to users table";
@@ -59,13 +60,13 @@ class Commands
                 //echo "dry run";
                 break;
             case "-u":
-                //echo "mysql username";
+                echo $mysql->getUsername();
                 break;
             case "-p":
-                //echo "mysql password";
+                echo $mysql->getPassword();
                 break;
             case "-h":
-                //echo "mysql host";
+                echo $mysql->getHostname();
                 break;
             case "--help":
                 echo $this->displayHelp();
