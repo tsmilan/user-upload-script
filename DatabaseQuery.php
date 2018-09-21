@@ -19,16 +19,16 @@ class DatabaseQuery
     }
     /**
      * Builds a query string to create users table if it does not exist yet.
-     * @param array $tableFields Table field names for the table to be created
+     * 
      * @return string MySQL CREATE table query
      */
-    private function buildCreateTableQuery($tableFields)
+    private function buildCreateTableQuery()
     {
         $sql  = "CREATE TABLE IF NOT EXISTS users (";
         $sql .= "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,";
-        foreach ($tableFields as $field) {
-            $sql .= "$field VARCHAR(50) NOT NULL,";
-        }
+        $sql .= "name VARCHAR(50) NOT NULL,";
+        $sql .= "surname VARCHAR(50) NOT NULL,";
+        $sql .= "email VARCHAR(100) NOT NULL,";
         $sql .= "UNIQUE KEY UNIQUE_EMAIL (email)";
         $sql .= ")";
 
@@ -36,12 +36,12 @@ class DatabaseQuery
     }
     /**
      * Create users table if it does not exist yet.
-     * @param type $tableFields Table field names for the table to be created
+     * 
      * @return string Returns the success or error message in the query
      */
-    public function createTable($tableFields)
+    public function createTable()
     {
-        $sql = $this->buildCreateTableQuery($tableFields);
+        $sql = $this->buildCreateTableQuery();
 
         if ($this->mysql->query($sql) === TRUE) {
             return "Users table was created successfully!";

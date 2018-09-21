@@ -34,13 +34,7 @@ class Commands
     private function createTable()
     {
         $DatabaseQuery = new DatabaseQuery($config);
-        $tableFields = getFieldNamesFromCSV(CSV_FILE);
-
-        if ($tableFields) {
-            return $DatabaseQuery->createTable($tableFields); 
-        } else {
-            exit('Invalid file. Please try again.');
-        }
+        echo $DatabaseQuery->createTable($tableFields); 
     }
     /**
      * Will insert users from the CSV file into the users table
