@@ -10,12 +10,16 @@ require_once('functions.php');
 require_once('Database.php');
 require_once('DatabaseQuery.php');
 require_once('Commands.php');
+require_once('User.php');
 
 // Connect to database
 Database::getInstance($config);
 
 $cmd = new Commands();
 $cmd->readCommandLineArgs($argv);
+
+
+
 
 
 

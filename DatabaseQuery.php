@@ -49,4 +49,18 @@ class DatabaseQuery
             return "Error creating table: " . $this->mysql->error;
         }
     }
+    /**
+     * Insert user to users table
+     * @param object $user User object
+     */
+    public function insertUser($user)
+    {
+        if ($stmt = $this->mysql->prepare('INSERT INTO users (name, surname, email) VALUES (?,?,?)')) {
+            $stmt->bind_param('sss',$user->name,$user->surname,$user->email);
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            echo 'Error: ' . $this->mysql->error;
+        }
+    }
 }

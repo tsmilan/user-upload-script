@@ -43,6 +43,29 @@ class Commands
         }
     }
     /**
+     * Will insert users from the CSV file into the users table
+     * @param string $csvfile The name of the CSV to be parsed
+     */
+    public function insertFromCSV($csvfile)
+    {
+        $users = parseCSV($csvfile);
+
+        if ($users) {
+            $UsersObj = array();
+            for ($i=0; $i < count($users) ; $i++) { 
+                $name = $users[$i]['name'];
+                $surname = $users[$i]['surname'];
+                $email = $users[$i]['email'];
+                // map users from csv file to Users object
+                $UsersObj[$i] = new User($name, $surname, $email); 
+                // save to db
+                $UsersObj[$i]->save();
+            }
+        } else {
+            echo "There was an error loading the file. Please try again.";
+        }
+    }
+    /**
      * Read command line arguments  
      * @param array $argv Array of arguments passed to script
      */
@@ -51,7 +74,8 @@ class Commands
         $mysql=Database::getInstance($config);
         switch ($argv[1]) {
             case "--file":
-                //echo "Parse CSV file and insert to users table";
+                $csvfile = $argv[2];
+                $this->insertFromCSV($csvfile);
                 break;
             case "--create_table":
                 echo $this->createTable();
