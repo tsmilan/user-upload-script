@@ -48,14 +48,29 @@ class User
         $email = filter_var($this->email, FILTER_SANITIZE_EMAIL);
 
         $DatabaseQuery = new DatabaseQuery($config);
-
+        
         $this->trimWhiteSpace();
-
+        // if it passes the validation then insert it to users table
         if ($this->isValidEmail($email)) {
-        $DatabaseQuery->insertUser($this);
+            return $DatabaseQuery->insertUser($this);
         } else {
-        echo("$email is not a valid email address");
+            echo "Invalid email address format $email \n";
         }
+    }
+
+    public function displayValidUserFormat()
+    {
+        $this->fixUserCaps();
+        $email = filter_var($this->email, FILTER_SANITIZE_EMAIL);
+        $this->trimWhiteSpace();
+        $mask = "| %-10s| %-10s| %-25s|\n";
+        
+        printf($mask, $this->name, $this->surname, $this->email);
+
+        if (!$this->isValidEmail($email)) {
+           echo "\nInvalid email address format $email \n";
+        } 
+        
     }
 
     public function getName()

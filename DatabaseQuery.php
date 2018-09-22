@@ -58,9 +58,9 @@ class DatabaseQuery
         if ($stmt = $this->mysql->prepare('INSERT INTO users (name, surname, email) VALUES (?,?,?)')) {
             $stmt->bind_param('sss',$user->name,$user->surname,$user->email);
             $stmt->execute();
-            $stmt->close();
+            return $stmt;
         } else {
-            echo 'Error: ' . $this->mysql->error;
+            return 'Error: ' . $this->mysql->error;
         }
     }
 }

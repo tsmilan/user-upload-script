@@ -43,6 +43,9 @@ class Commands
     public function insertFromCSV($csvfile)
     {
         $users = parseCSV($csvfile);
+        $affectedRows = 0;
+        $output = "";
+        $error = "";
 
         if ($users) {
             $UsersObj = array();
@@ -53,11 +56,76 @@ class Commands
                 // map users from csv file to Users object
                 $UsersObj[$i] = new User($name, $surname, $email); 
                 // save to db
-                $UsersObj[$i]->save();
+                $stmt_result = $UsersObj[$i]->save();
+                
+                if (!empty($stmt_result->error)) {
+                  $error .=  $stmt_result->error."\n";
+                }
+                 
+                if($stmt_result->affected_rows == 1) {
+                  $affectedRows++;
+                }
             }
+
+             if (!empty($error)) {
+                $output .= $error;
+              }
+
+            if (intval($affectedRows) > 0) {
+              $output .= $affectedRows . " row";
+              $output .= (intval($affectedRows) > 1 ? "s " : " ");
+              $output .= "inserted. \n";
+            }
+            
         } else {
-            echo "There was an error loading the file. Please try again.";
+            $output = "There was an error loading the file. Please try again.";
         }
+
+        echo $output;
+    }
+    public function arrayHasDuplicate($array) {
+       return count($array) !== count(array_unique($array));
+    }
+
+    private function isValidDryRunCmd($argv)
+    {
+      return (!$this->arrayHasDuplicate($argv) 
+                AND count($argv) === 4 
+                AND $argv[1] === "--dry_run" 
+                AND $argv[2] === "--file");
+    }
+
+    private function isValidFileDryRunCmd($argv)
+    {
+      return (!$this->arrayHasDuplicate($argv) 
+                AND count($argv) === 4 
+                AND $argv[1] === "--file" 
+                AND $argv[3] === "--dry_run");
+    }
+
+    public function dryRun($argv, $csvfile)
+    {
+        $users = parseCSV($csvfile);
+        $output = "";
+
+        if ($users) {
+            $UsersObj = array();
+            echo "\nThe following data will be inserted to the users table except for those with invalid email address format.\n\n";
+            for ($i=0; $i < count($users) ; $i++) { 
+                $name = $users[$i]['name'];
+                $surname = $users[$i]['surname'];
+                $email = $users[$i]['email'];
+                // map users from csv file to Users object
+                $UsersObj[$i] = new User($name, $surname, $email);       
+                $UsersObj[$i]->displayValidUserFormat();
+            }
+            
+        } else {
+            $output = "There was an error loading the file. Please try again.";
+        }
+
+        echo $output;
+
     }
     /**
      * Read command line arguments  
@@ -69,13 +137,22 @@ class Commands
         switch ($argv[1]) {
             case "--file":
                 $csvfile = $argv[2];
-                $this->insertFromCSV($csvfile);
+                if ($this->isValidFileDryRunCmd($argv)) {
+                    $this->dryRun($argv, $csvfile);
+                } else {
+                    $this->insertFromCSV($csvfile);
+                }
                 break;
             case "--create_table":
                 echo $this->createTable();
                 break;
             case "--dry_run":
-                //echo "dry run";
+                $csvfile = $argv[3];
+                if ($this->isValidDryRunCmd($argv)) {
+                    $this->dryRun($argv, $csvfile);
+                } else {
+                    echo "\nInvalid command. Please use --dry_run --file [filename] or --file [filename] --dry_run or use --help for more information.";
+                }
                 break;
             case "-u":
                 echo $mysql->getUsername();
