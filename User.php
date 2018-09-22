@@ -54,7 +54,7 @@ class User
         if ($this->isValidEmail($email)) {
             return $DatabaseQuery->insertUser($this);
         } else {
-            echo "Invalid email address format $email \n";
+            return "Error: Invalid email address format $email \n";
         }
     }
 
@@ -68,7 +68,7 @@ class User
         printf($mask, $this->name, $this->surname, $this->email);
 
         if (!$this->isValidEmail($email)) {
-           echo "\nInvalid email address format $email \n";
+           echo "\nError: Invalid email address format $email \n";
         } 
         
     }

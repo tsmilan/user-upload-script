@@ -57,19 +57,23 @@ class Commands
                 $UsersObj[$i] = new User($name, $surname, $email); 
                 // save to db
                 $stmt_result = $UsersObj[$i]->save();
-                
-                if (!empty($stmt_result->error)) {
-                  $error .=  $stmt_result->error."\n";
-                }
+
+                if (gettype($stmt_result) === "string") {
+                    echo $stmt_result . "\n";
+                } else {
+                    if (!empty($stmt_result->error)) {
+                        $error .=  $stmt_result->error."\n";
+                    }
                  
-                if($stmt_result->affected_rows == 1) {
-                  $affectedRows++;
+                    if($stmt_result->affected_rows == 1) {
+                        $affectedRows++;
+                    }
                 }
             }
 
-             if (!empty($error)) {
+            if (!empty($error)) {
                 $output .= $error;
-              }
+            }
 
             if (intval($affectedRows) > 0) {
               $output .= $affectedRows . " row";
