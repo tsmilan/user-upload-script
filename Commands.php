@@ -31,80 +31,87 @@ class Commands
      * Create users table
      * @return string Returns the success or error message in creating the users table
      */
-    private function createTable()
+    private function createTable($config)
     {
         $DatabaseQuery = new DatabaseQuery($config);
-        echo $DatabaseQuery->createTable($tableFields); 
+       
+        if ($DatabaseQuery->mysql->connect_errno == 0) {
+           echo $DatabaseQuery->createTable(); 
+        } 
+       
     }
     /**
      * Will insert users from the CSV file into the users table
      * @param string $csvfile The name of the CSV to be parsed
+     * @param array $config Database configuration array
      */
-    public function insertFromCSV($csvfile)
+    public function insertFromCSV($csvfile, $config)
     {
         $users = parseCSV($csvfile);
         $affectedRows = 0;
         $output = "";
         $error = "";
 
-        if ($users) {
-            $UsersObj = array();
-            for ($i=0; $i < count($users) ; $i++) { 
-                $name = $users[$i]['name'];
-                $surname = $users[$i]['surname'];
-                $email = $users[$i]['email'];
-                // map users from csv file to Users object
-                $UsersObj[$i] = new User($name, $surname, $email); 
-                // save to db
-                $stmt_result = $UsersObj[$i]->save();
+        $DatabaseQuery = new DatabaseQuery($config);
 
-                if (gettype($stmt_result) === "string") {
-                    echo $stmt_result . "\n";
-                } else {
-                    if (!empty($stmt_result->error)) {
-                        $error .=  $stmt_result->error."\n";
-                    }
-                 
-                    if($stmt_result->affected_rows == 1) {
-                        $affectedRows++;
+        if ($DatabaseQuery->mysql->connect_errno == 0) {
+            if ($users) {
+                $UsersObj = array();
+                for ($i=0; $i < count($users) ; $i++) { 
+                    $name = $users[$i]['name'];
+                    $surname = $users[$i]['surname'];
+                    $email = $users[$i]['email'];
+                    // map users from csv file to Users object
+                    $UsersObj[$i] = new User($name, $surname, $email); 
+                    // save to db
+                    $stmt_result = $UsersObj[$i]->save($DatabaseQuery);
+
+                    if (gettype($stmt_result) === "string") {
+                        echo $stmt_result;
+                    } else {
+                        if (!empty($stmt_result->error)) {
+                            $error .=  $stmt_result->error."\n";
+                        }
+
+                        if($stmt_result->affected_rows == 1) {
+                            $affectedRows++;
+                        }
                     }
                 }
-            }
 
-            if (!empty($error)) {
-                $output .= $error;
-            }
+                if (!empty($error)) {
+                    $output .= $error;
+                }
 
-            if (intval($affectedRows) > 0) {
-              $output .= $affectedRows . " row";
-              $output .= (intval($affectedRows) > 1 ? "s " : " ");
-              $output .= "inserted. \n";
+                if (intval($affectedRows) > 0) {
+                    $output .= $affectedRows . " row";
+                    $output .= (intval($affectedRows) > 1 ? "s " : " ");
+                    $output .= "inserted. \n";
+                }
+            } else {
+                $output = "There was an error loading the $csvfile file. Please try again.";
             }
-            
-        } else {
-            $output = "There was an error loading the file. Please try again.";
-        }
-
-        echo $output;
+            echo $output;
+        } 
     }
     public function arrayHasDuplicate($array) {
-       return count($array) !== count(array_unique($array));
+        return count($array) !== count(array_unique($array));
     }
 
     private function isValidDryRunCmd($argv)
     {
-      return (!$this->arrayHasDuplicate($argv) 
-                AND count($argv) === 4 
-                AND $argv[1] === "--dry_run" 
-                AND $argv[2] === "--file");
+        return (!$this->arrayHasDuplicate($argv) 
+            AND count($argv) === 4 
+            AND $argv[1] === "--dry_run" 
+            AND $argv[2] === "--file");
     }
 
     private function isValidFileDryRunCmd($argv)
     {
-      return (!$this->arrayHasDuplicate($argv) 
-                AND count($argv) === 4 
-                AND $argv[1] === "--file" 
-                AND $argv[3] === "--dry_run");
+        return (!$this->arrayHasDuplicate($argv) 
+            AND count($argv) === 4 
+            AND $argv[1] === "--file" 
+            AND $argv[3] === "--dry_run");
     }
 
     public function dryRun($argv, $csvfile)
@@ -123,13 +130,61 @@ class Commands
                 $UsersObj[$i] = new User($name, $surname, $email);       
                 $UsersObj[$i]->displayValidUserFormat();
             }
-            
         } else {
             $output = "There was an error loading the file. Please try again.";
         }
-
         echo $output;
+    }
 
+    private function createTableScript($argv)
+    {
+        $commands = array();
+        $args = array_slice($argv, 2);
+
+        if(count($argv) === 8 OR count($argv) === 10) {
+
+            for ($i=2; $i < count($argv); $i++) { 
+                $value = $argv[$i];
+                if($value[0] === "-") {
+                    $commands[$value] = $argv[$i + 1];
+                }
+            }
+
+            if (array_key_exists('-u', $commands) 
+                AND array_key_exists('-p', $commands) 
+                AND array_key_exists('-h', $commands) 
+                OR array_key_exists('--file', $commands)) {
+
+                foreach ($commands as $key => $value) {
+                    if ($key === "-u") {
+                        $username = $value;
+                    } else if ($key === "-p") {
+                        $password = $value;
+                    } else if ($key === "-h") {
+                        $hostname = $value;
+                    } else if ($key === "--file") {
+                        $csvfile = $value;
+                    } 
+                }
+
+                $config  = array(
+                'hostname' => $hostname,
+                'username' => $username,
+                'password' => $password,
+                'dbname' => 'php_task',
+                'port' => '8889',
+                'socket' => '/Applications/MAMP/tmp/mysql/mysql.sock',
+                'csvfile' => $csvfile
+                );
+            } else {
+                echo "Invalid command\n";
+            }
+
+            return $config;
+
+        } else { 
+            return "\nInvalid command...\n";
+        }
     }
     /**
      * Read command line arguments  
@@ -137,7 +192,6 @@ class Commands
      */
     public function readCommandLineArgs($argv)
     {
-        $mysql=Database::getInstance($config);
         switch ($argv[1]) {
             case "--file":
                 $csvfile = $argv[2];
@@ -148,7 +202,18 @@ class Commands
                 }
                 break;
             case "--create_table":
-                echo $this->createTable();
+                $config = $this->createTableScript($argv);
+                if (is_array($config)) {
+                    $csvfile = $config['csvfile'];
+                    if (array_key_exists('csvfile', $config) AND !empty($csvfile)) {
+                        echo $this->createTable($config);
+                        $this->insertFromCSV($csvfile, $config);
+                    } else {
+                        echo $this->createTable($config);
+                    }
+                } else {
+                    echo $config;
+                }
                 break;
             case "--dry_run":
                 $csvfile = $argv[3];
@@ -159,13 +224,13 @@ class Commands
                 }
                 break;
             case "-u":
-                echo $mysql->getUsername();
+                //echo $mysql->getUsername();
                 break;
             case "-p":
-                echo $mysql->getPassword();
+                //echo $mysql->getPassword();
                 break;
             case "-h":
-                echo $mysql->getHostname();
+                //echo $mysql->getHostname();
                 break;
             case "--help":
                 echo $this->displayHelp();

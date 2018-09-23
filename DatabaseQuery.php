@@ -8,14 +8,16 @@
 
 class DatabaseQuery
 {
-    private $mysql;
+    public $mysql;
     /**
      * 
      * @param array $config Database configuration array
      */
     public function __construct($config){
-        $instance=Database::getInstance($config);
+        $instance = new Database($config);
         $this->mysql = $instance->getConnection();
+
+        return $this->mysql;
     }
     /**
      * Builds a query string to create users table if it does not exist yet.
@@ -35,18 +37,32 @@ class DatabaseQuery
         return $sql;
     }
     /**
+     * Check if there is a users table
+     * 
+     * @return object MySQL result object
+     */
+    public function checkUserTableExists()
+    {
+        // Query to check if there is a users table
+        $sql = "SELECT * FROM users";
+        return $this->mysql->query($sql);
+    }
+    /**
      * Create users table if it does not exist yet.
      * 
      * @return string Returns the success or error message in the query
      */
     public function createTable()
     {
-        $sql = $this->buildCreateTableQuery();
-
-        if ($this->mysql->query($sql) === TRUE) {
-            return "Users table was created successfully!";
+        if ($this->checkUserTableExists() === false) {
+            $sql = $this->buildCreateTableQuery();
+            if ($this->mysql->query($sql) === true) {
+                return "Users table was created successfully! \n";
+            } else {
+                return "Error creating table: " . $this->mysql->error;
+            }
         } else {
-            return "Error creating table: " . $this->mysql->error;
+            return "Users table already exists! \n";
         }
     }
     /**
@@ -60,7 +76,7 @@ class DatabaseQuery
             $stmt->execute();
             return $stmt;
         } else {
-            return 'Error: ' . $this->mysql->error;
+            return "Error: " .$this->mysql->error . "\n";
         }
     }
 }

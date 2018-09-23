@@ -19,7 +19,7 @@ class User
     }
     /**
      * Check if email is valid
-     * @param type $email
+     * @param string $email
      * @return boolean Returns true if email is valid and false if not
      */
     public function isValidEmail($email)
@@ -42,13 +42,10 @@ class User
         $this->email = trim($this->email);
     }
 
-    public function save()
+    public function save($DatabaseQuery)
     {
         $this->fixUserCaps();
         $email = filter_var($this->email, FILTER_SANITIZE_EMAIL);
-
-        $DatabaseQuery = new DatabaseQuery($config);
-        
         $this->trimWhiteSpace();
         // if it passes the validation then insert it to users table
         if ($this->isValidEmail($email)) {
@@ -68,23 +65,7 @@ class User
         printf($mask, $this->name, $this->surname, $this->email);
 
         if (!$this->isValidEmail($email)) {
-           echo "\nError: Invalid email address format $email \n";
+           echo "Error: Invalid email address format $email \n";
         } 
-        
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function getSurname()
-    {
-        return $this->surname;
-    }
-
-    public function getEmail()
-    {
-        return $this->email;
     }
 }
