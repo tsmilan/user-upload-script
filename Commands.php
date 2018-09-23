@@ -6,8 +6,6 @@
  * @author Trisha Milan <tshmilan@gmail.com>
  */
 
-define("CSV_FILE", "users.csv");
-
 class Commands
 {
     /**
@@ -98,6 +96,52 @@ class Commands
         return count($array) !== count(array_unique($array));
     }
 
+    private function insertScript($argv)
+    {
+        $commands = array();
+
+        if(count($argv) === 9 ) {
+
+            for ($i=1; $i < count($argv); $i++) { 
+                $value = $argv[$i];
+                if($value[0] === "-") {
+                    $commands[$value] = $argv[$i + 1];
+                }
+            }
+
+            if (array_key_exists('-u', $commands) 
+                AND array_key_exists('-p', $commands) 
+                AND array_key_exists('-h', $commands)) {
+
+                foreach ($commands as $key => $value) {
+                    if ($key === "-u") {
+                        $username = $value;
+                    } else if ($key === "-p") {
+                        $password = $value;
+                    } else if ($key === "-h") {
+                        $hostname = $value;
+                    } else if ($key === "--file") {
+                        $csvfile = $value;
+                    } 
+                }
+
+                $config  = array(
+                'hostname' => $hostname,
+                'username' => $username,
+                'password' => $password,
+                'csvfile' => $csvfile
+                );
+            } else {
+                return INVALID_COMMAND_FILE;
+            }
+
+            return $config;
+
+        } else { 
+            return INVALID_COMMAND_FILE;
+        }
+    }
+
     private function isValidDryRunCmd($argv)
     {
         return (!$this->arrayHasDuplicate($argv) 
@@ -131,7 +175,7 @@ class Commands
                 $UsersObj[$i]->displayValidUserFormat();
             }
         } else {
-            $output = "There was an error loading the file. Please try again.";
+            $output = "There was an error loading the $csvfile file. Please try again.";
         }
         echo $output;
     }
@@ -139,8 +183,7 @@ class Commands
     private function createTableScript($argv)
     {
         $commands = array();
-        $args = array_slice($argv, 2);
-
+        
         if(count($argv) === 8 OR count($argv) === 10) {
 
             for ($i=2; $i < count($argv); $i++) { 
@@ -171,19 +214,17 @@ class Commands
                 'hostname' => $hostname,
                 'username' => $username,
                 'password' => $password,
-                'dbname' => 'php_task',
-                'port' => '8889',
-                'socket' => '/Applications/MAMP/tmp/mysql/mysql.sock',
                 'csvfile' => $csvfile
                 );
+                
             } else {
-                echo "Invalid command\n";
+                return INVALID_COMMAND_CREATE_TABLE;
             }
 
             return $config;
 
         } else { 
-            return "\nInvalid command...\n";
+            return INVALID_COMMAND_CREATE_TABLE;
         }
     }
     /**
@@ -198,7 +239,12 @@ class Commands
                 if ($this->isValidFileDryRunCmd($argv)) {
                     $this->dryRun($argv, $csvfile);
                 } else {
-                    $this->insertFromCSV($csvfile);
+                    $config = $this->insertScript($argv);
+                    if (is_array($config)) {
+                        $this->insertFromCSV($csvfile, $config);
+                    } else {
+                        echo $config;
+                    }             
                 }
                 break;
             case "--create_table":
@@ -220,7 +266,7 @@ class Commands
                 if ($this->isValidDryRunCmd($argv)) {
                     $this->dryRun($argv, $csvfile);
                 } else {
-                    echo "\nInvalid command. Please use --dry_run --file [filename] or --file [filename] --dry_run or use --help for more information.";
+                    echo INVALID_COMMAND;
                 }
                 break;
             case "-u":
@@ -236,7 +282,7 @@ class Commands
                 echo $this->displayHelp();
                 break;
             default:
-                echo "Invalid command! Use --help for the list of available commands.";
+                echo INVALID_COMMAND;
                 break;
         }
     }

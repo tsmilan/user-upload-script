@@ -27,9 +27,9 @@ class Database
         $this->hostname = $config['hostname'];
         $this->username = $config['username'];
         $this->password = $config['password'];
-        $this->dbname = $config['dbname'];
-        $this->port = $config['port'];
-        $this->socket = $config['socket'];
+        $this->dbname = DB_NAME;
+        $this->port = PORT;
+        $this->socket = SOCKET;
  
         $this->connect();
     }

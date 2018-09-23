@@ -5,6 +5,7 @@
  * @author Trisha Milan <tshmilan@gmail.com>
  */
 
+require_once('constants.php');
 require_once('functions.php');
 require_once('Database.php');
 require_once('DatabaseQuery.php');
