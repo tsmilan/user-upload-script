@@ -207,7 +207,7 @@ class Commands
     public function createTableScript($argv)
     {
         $commands = array();
-        
+        $csvfile = "";
         if(count($argv) === 8 OR count($argv) === 10) {
 
             for ($i=2; $i < count($argv); $i++) { 
