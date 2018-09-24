@@ -257,7 +257,8 @@ class Commands
      */
     public function readCommandLineArgs($argv)
     {
-        switch ($argv[1]) {
+        $cmd = isset($argv[1]) ? $argv[1] : "";
+        switch ($cmd) {
             case "--file":
                 $csvfile = isset($argv[2]) ? $argv[2] : "";
                 if ($this->isValidFileDryRunCmd($argv)) {
