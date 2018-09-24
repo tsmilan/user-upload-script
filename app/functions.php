@@ -13,7 +13,7 @@ function parseCSV($filename) {
     if(!file_exists($filename) || !is_readable($filename)) return false;
         $csv = array_map("str_getcsv", file($filename)); 
         $keys = array_shift($csv);
-        $trimmedKeys = array_map('trim', $keys);
+        $trimmedKeys = array_map("trim", $keys);
         foreach ($csv as $i=>$row) {
             $csv[$i] = array_combine($trimmedKeys, $row);
         }

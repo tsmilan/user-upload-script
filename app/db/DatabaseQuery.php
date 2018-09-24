@@ -71,7 +71,7 @@ class DatabaseQuery
      */
     public function insertUser($user)
     {
-        if ($stmt = $this->mysql->prepare('INSERT INTO users (name, surname, email) VALUES (?,?,?)')) {
+        if ($stmt = $this->mysql->prepare("INSERT INTO users (name, surname, email) VALUES (?,?,?)")) {
             $stmt->bind_param('sss',$user->name,$user->surname,$user->email);
             $stmt->execute();
             return $stmt;

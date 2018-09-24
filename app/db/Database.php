@@ -12,8 +12,6 @@ class Database
     private $username;
     private $password;
     private $dbname;
-    private $port;
-    private $socket;
     private $mysql;
     
     /**
@@ -24,12 +22,10 @@ class Database
      */
     public function __construct($config)
     {
-        $this->hostname = $config['hostname'];
-        $this->username = $config['username'];
-        $this->password = $config['password'];
+        $this->hostname = $config["hostname"];
+        $this->username = $config["username"];
+        $this->password = $config["password"];
         $this->dbname = DB_NAME;
-        $this->port = PORT;
-        $this->socket = SOCKET;
  
         $this->connect();
     }
@@ -45,9 +41,7 @@ class Database
                 $this->hostname,
                 $this->username,
                 $this->password,
-                $this->dbname,
-                $this->port, 
-                $this->socket
+                $this->dbname
             );
             return $this->mysql;
         } catch(Exception $error) {

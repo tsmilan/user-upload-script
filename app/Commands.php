@@ -56,9 +56,9 @@ class Commands
             if ($users) {
                 $UsersObj = array();
                 for ($i=0; $i < count($users) ; $i++) { 
-                    $name = $users[$i]['name'];
-                    $surname = $users[$i]['surname'];
-                    $email = $users[$i]['email'];
+                    $name = $users[$i]["name"];
+                    $surname = $users[$i]["surname"];
+                    $email = $users[$i]["email"];
                     // map users from csv file to Users object
                     $UsersObj[$i] = new User($name, $surname, $email); 
                     // save to db
@@ -109,9 +109,9 @@ class Commands
                 }
             }
 
-            if (array_key_exists('-u', $commands) 
-                AND array_key_exists('-p', $commands) 
-                AND array_key_exists('-h', $commands)) {
+            if (array_key_exists("-u", $commands) 
+                AND array_key_exists("-p", $commands) 
+                AND array_key_exists("-h", $commands)) {
 
                 foreach ($commands as $key => $value) {
                     if ($key === "-u") {
@@ -124,9 +124,9 @@ class Commands
                 }
 
                 $config  = array(
-                'hostname' => $hostname,
-                'username' => $username,
-                'password' => $password
+                  "hostname" => $hostname,
+                  "username" => $username,
+                  "password" => $password
                 );
                 
             } else {
@@ -165,9 +165,9 @@ class Commands
             $UsersObj = array();
             echo "\nThe following data will be inserted to the users table except for those with invalid email address format.\n\n";
             for ($i=0; $i < count($users) ; $i++) { 
-                $name = $users[$i]['name'];
-                $surname = $users[$i]['surname'];
-                $email = $users[$i]['email'];
+                $name = $users[$i]["name"];
+                $surname = $users[$i]["surname"];
+                $email = $users[$i]["email"];
                 // map users from csv file to Users object
                 $UsersObj[$i] = new User($name, $surname, $email);       
                 $UsersObj[$i]->displayValidUserFormat();
@@ -191,10 +191,10 @@ class Commands
                 }
             }
 
-            if (array_key_exists('-u', $commands) 
-                AND array_key_exists('-p', $commands) 
-                AND array_key_exists('-h', $commands) 
-                OR array_key_exists('--file', $commands)) {
+            if (array_key_exists("-u", $commands) 
+                AND array_key_exists("-p", $commands) 
+                AND array_key_exists("-h", $commands) 
+                OR array_key_exists("--file", $commands)) {
 
                 foreach ($commands as $key => $value) {
                     if ($key === "-u") {
@@ -209,10 +209,10 @@ class Commands
                 }
 
                 $config  = array(
-                'hostname' => $hostname,
-                'username' => $username,
-                'password' => $password,
-                'csvfile' => $csvfile
+                  "hostname" => $hostname,
+                  "username" => $username,
+                  "password" => $password,
+                  "csvfile" => $csvfile
                 );
 
             } else {
@@ -248,8 +248,8 @@ class Commands
             case "--create_table":
                 $config = $this->createTableScript($argv);
                 if (is_array($config)) {
-                    $csvfile = $config['csvfile'];
-                    if (array_key_exists('csvfile', $config) AND !empty($csvfile)) {
+                    $csvfile = $config["csvfile"];
+                    if (array_key_exists("csvfile", $config) AND !empty($csvfile)) {
                         echo $this->createTable($config);
                         $this->insertFromCSV($csvfile, $config);
                     } else {
@@ -268,13 +268,13 @@ class Commands
                 }
                 break;
             case "-u":
-                //echo $mysql->getUsername();
+                echo INVALID_MYSQL_COMMAND;
                 break;
             case "-p":
-                //echo $mysql->getPassword();
+                echo INVALID_MYSQL_COMMAND;
                 break;
             case "-h":
-                //echo $mysql->getHostname();
+                echo INVALID_MYSQL_COMMAND;
                 break;
             case "--help":
                 echo $this->displayHelp();
