@@ -12,6 +12,7 @@ This PHP script accepts a CSV file as input and processes the CSV file. The pars
 
 1. Install dependencies by running `composer install`
 2. Start the script by running `php user_upload.php [options]` see command line directives and sample usage below
+3. Use `./vendor/bin/phpunit` to run PHPUnit
 
 ## Command Line Directives
 
