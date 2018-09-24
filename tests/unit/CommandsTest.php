@@ -1,13 +1,18 @@
 <?php
 
-require_once('app/Commands.php');
+/**
+ * CommandsTest class
+ * @author Trisha Milan <tshmilan@gmail.com>
+ */
+
+require_once("app/Commands.php");
 
 class CommandsTest extends \PHPUnit\Framework\TestCase
 {
     public function testArrayHasDuplicateFunction()
     {
         $cmd = new Commands();
-        $array = ['-h', '-u', '--file', '-u'];
+        $array = ["-h", "-u", "--file", "-u"];
 
         $this->assertTrue($cmd->arrayHasDuplicate($array));
     }
@@ -16,21 +21,21 @@ class CommandsTest extends \PHPUnit\Framework\TestCase
     {
         $cmd = new Commands();
         $array = array(
-        '0' => 'user_upload.php',
-        '1' => '--file',
-        '2' => 'users.csv',
-        '3' => '-u',
-        '4' => 'root',
-        '5' => '-p',
-        '6' => 'rootp',
-        '7' => '-h',
-        '8' => 'localhost',
+            "0" => "user_upload.php",
+            "1" => "--file",
+            "2" => "users.csv",
+            "3" => "-u",
+            "4" => "root",
+            "5" => "-p",
+            "6" => "rootp",
+            "7" => "-h",
+            "8" => "localhost"
         );
 
         $config  = array(
-        'hostname' => 'localhost',
-        'username' => 'root',
-        'password' => 'rootp'
+            "hostname" => "localhost",
+            "username" => "root",
+            "password" => "rootp"
         );
 
         $result = $cmd->insertScript($array);
@@ -43,23 +48,23 @@ class CommandsTest extends \PHPUnit\Framework\TestCase
     {
         $cmd = new Commands();
         $array = array(
-        '0' => 'user_upload.php',
-        '1' => 'create_table',
-        '2' => '--file',
-        '3' => 'users.csv',
-        '4' => '-u',
-        '5' => 'root',
-        '6' => '-p',
-        '7' => 'rootp',
-        '8' => '-h',
-        '9' => 'localhost',
+            "0" => "user_upload.php",
+            "1" => "create_table",
+            "2" => "--file",
+            "3" => "users.csv",
+            "4" => "-u",
+            "5" => "root",
+            "6" => "-p",
+            "7" => "rootp",
+            "8" => "-h",
+            "9" => "localhost"
         );
 
         $config  = array(
-        'hostname' => 'localhost',
-        'username' => 'root',
-        'password' => 'rootp',
-        'csvfile' => 'users.csv'
+            "hostname" => "localhost",
+            "username" => "root",
+            "password" => "rootp",
+            "csvfile" => "users.csv"
         );
 
         $result = $cmd->createTableScript($array);
@@ -71,10 +76,10 @@ class CommandsTest extends \PHPUnit\Framework\TestCase
     {
         $cmd = new Commands();
         $array = array(
-        '0' => 'user_upload.php',
-        '1' => '--dry_run',
-        '2' => '--file',
-        '3' => 'users.csv'
+            "0" => "user_upload.php",
+            "1" => "--dry_run",
+            "2" => "--file",
+            "3" => "users.csv"
         );
 
         $this->assertTrue($cmd->isValidDryRunCmd($array));
@@ -84,10 +89,10 @@ class CommandsTest extends \PHPUnit\Framework\TestCase
     {
         $cmd = new Commands();
         $array = array(
-        '0' => 'user_upload.php',
-        '1' => '--file',
-        '2' => 'users.csv',
-        '3' => '--dry_run'
+            "0" => "user_upload.php",
+            "1" => "--file",
+            "2" => "users.csv",
+            "3" => "--dry_run"
         );
 
         $this->assertTrue($cmd->isValidFileDryRunCmd($array));

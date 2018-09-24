@@ -27,6 +27,7 @@ class Commands
     }
     /**
      * Create users table
+     * @param array $config Database configuration array
      * @return string Returns the success or error message in creating the users table
      */
     private function createTable($config)
@@ -92,10 +93,19 @@ class Commands
             echo $output;
         } 
     }
+    /**
+     * Check if array has a duplicate
+     * @param array $array Array to be checked
+     * @return boolean
+     */
     public function arrayHasDuplicate($array) {
         return count($array) !== count(array_unique($array));
     }
-
+    /**
+     * 
+     * @param array $argv Command line arguments
+     * @return array $config Database configuration array
+     */
     public function insertScript($argv)
     {
         $commands = array();
@@ -139,7 +149,11 @@ class Commands
             return INVALID_COMMAND_FILE;
         }
     }
-
+    /**
+     * Check if command is a valid dry run command
+     * @param array $argv Command line arguments
+     * @return boolean
+     */
     public function isValidDryRunCmd($argv)
     {
         return (!$this->arrayHasDuplicate($argv) 
@@ -147,7 +161,11 @@ class Commands
             AND $argv[1] === "--dry_run" 
             AND $argv[2] === "--file");
     }
-
+    /**
+     * Check if command is a valid --file with dry run command
+     * @param array $argv Command line arguments
+     * @return boolean
+     */
     public function isValidFileDryRunCmd($argv)
     {
         return (!$this->arrayHasDuplicate($argv) 
@@ -155,7 +173,11 @@ class Commands
             AND $argv[1] === "--file" 
             AND $argv[3] === "--dry_run");
     }
-
+    /**
+     * 
+     * @param array $argv Command line arguments
+     * @param string $csvfile CSV filename
+     */
     public function dryRun($argv, $csvfile)
     {
         $users = parseCSV($csvfile);
@@ -177,7 +199,11 @@ class Commands
         }
         echo $output;
     }
-
+    /**
+     *
+     * @param array $argv Command line arguments
+     * @return array $config Database configuration array
+     */
     public function createTableScript($argv)
     {
         $commands = array();

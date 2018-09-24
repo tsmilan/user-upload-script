@@ -10,7 +10,12 @@ class User
     public $name;
     public $surname;
     public $email;
-
+    /**
+     * 
+     * @param string $name Name
+     * @param string $surname Surname
+     * @param string $email Email
+     */
     public function __construct($name, $surname, $email) 
     {
         $this->name = $name;
@@ -26,7 +31,9 @@ class User
     {
         return filter_var($email, FILTER_VALIDATE_EMAIL);
     }
-
+    /**
+     * Fixes user name, surname and email casing
+     */
     public function fixUserCaps()
     {
         // capitalize first character of each word in a string for people with second names
@@ -34,14 +41,20 @@ class User
         $this->surname = ucfirst(strtolower($this->surname));
         $this->email = strtolower($this->email);
     }
-
+    /**
+     * Removes trailing white space in user name, surname and email
+     */
     public function trimWhiteSpace()
     {
         $this->name = trim($this->name);
         $this->surname = trim($this->surname);
         $this->email = trim($this->email);
     }
-
+    /**
+     * Insert user data to database
+     * @param object $DatabaseQuery
+     * @return object MySQL result object
+     */
     public function save($DatabaseQuery)
     {
         $this->fixUserCaps();
@@ -54,7 +67,9 @@ class User
             return "Error: Invalid email address format $email \n";
         }
     }
-
+    /**
+     * Displays the user data to be inserted in the database for the --dry_run command
+     */
     public function displayValidUserFormat()
     {
         $this->fixUserCaps();

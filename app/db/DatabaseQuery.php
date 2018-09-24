@@ -68,6 +68,7 @@ class DatabaseQuery
     /**
      * Insert user to users table
      * @param object $user User object
+     * @return object MySQL result object
      */
     public function insertUser($user)
     {

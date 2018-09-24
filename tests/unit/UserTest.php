@@ -1,6 +1,11 @@
 <?php
 
-require_once('app/model/User.php');
+/**
+ * UserTest class
+ * @author Trisha Milan <tshmilan@gmail.com>
+ */
+
+require_once("app/model/User.php");
 
 class UserTest extends \PHPUnit\Framework\TestCase
 {
