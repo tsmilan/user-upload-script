@@ -259,7 +259,7 @@ class Commands
     {
         switch ($argv[1]) {
             case "--file":
-                $csvfile = $argv[2];
+                $csvfile = isset($argv[2]) ? $argv[2] : "";
                 if ($this->isValidFileDryRunCmd($argv)) {
                     $this->dryRun($argv, $csvfile);
                 } else {
@@ -286,7 +286,7 @@ class Commands
                 }
                 break;
             case "--dry_run":
-                $csvfile = $argv[3];
+                $csvfile = isset($argv[3]) ? $argv[3] : "";
                 if ($this->isValidDryRunCmd($argv)) {
                     $this->dryRun($argv, $csvfile);
                 } else {
